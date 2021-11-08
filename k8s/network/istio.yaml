@@ -23,8 +23,14 @@ metadata:
   name: go-demo-8
 spec:
   host: go-demo-8
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 2
+      http:
+        http1MaxPendingRequests: 1
+        maxRequestsPerConnection: 1
   subsets:
   - name: primary
     labels:
       release: primary
-
