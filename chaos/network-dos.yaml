@@ -10,6 +10,9 @@ configuration:
   ingress_host:
       type: env
       key: INGRESS_HOST
+  fortio_pod:
+      type: env
+      key: FORTIO_POD
 steady-state-hypothesis:
   title: The app is healthy
   probes:
@@ -30,21 +33,23 @@ method:
     type: process
     path: kubectl
     arguments:
-    - run
-    - siege
-    - --namespace
+    - -n
     - go-demo-8
-    - --image
-    - yokogawa/siege
-    - --generator
-    - run-pod/v1
-    - -it
-    - --rm
-    - -- 
-    - --concurrent
+    - -c
+    - fortio
+    - exec
+    - ${fortio_pod}
+    - --
+    - /usr/bin/fortio
+    - load
+    - -c
     - 50
-    - --time
-    - 20S
-    - "http://go-demo-8/limiter"
-  pauses: 
+    - -qps
+    - 0
+    - -n
+    - 20
+    - -loglevel
+    - Warning
+    - http://go-demo-8/limiter
+  pauses:
     after: 5
